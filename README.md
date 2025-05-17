@@ -2,7 +2,6 @@
 
 A web application built with Laravel to help musicians organize and manage their musical instrument collections. This application allows users to create personalized collections, categorize instruments, and track important details about each instrument.
 
-![Musical Instrument Collection Manager](https://via.placeholder.com/800x400)
 
 ## Table of Contents
 
