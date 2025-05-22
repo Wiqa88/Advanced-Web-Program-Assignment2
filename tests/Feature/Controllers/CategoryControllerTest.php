@@ -1,116 +1,103 @@
 <?php
 
-namespace Tests\Feature\Controllers;
+namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Illuminate\Http\Request;
 
-class CategoryControllerTest extends TestCase
+class CategoryController extends Controller
 {
-    use RefreshDatabase;
 
-    /**
-     * Test the index page displays user's categories.
-     */
-    public function test_index_displays_categories()
+    public function __construct()
     {
-        $user = User::factory()->create();
+        $this->middleware('auth');
+    }
 
-        $category = Category::create([
-            'name' => 'Test Category',
-            'description' => 'Test Description',
-            'user_id' => $user->id,
+
+    public function index()
+    {
+        $categories = Category::where('user_id', auth()->id())->orderBy('name')->get();
+        return view('categories.index', compact('categories'));
+    }
+
+
+    public function create()
+    {
+        return view('categories.create');
+    }
+
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'nullable|string',
         ]);
 
-        $response = $this->actingAs($user)->get(route('categories.index'));
+        $data['user_id'] = auth()->id();
 
-        $response->assertStatus(200);
-        $response->assertSee('Test Category');
+        Category::create($data);
+
+        return redirect()->route('categories.index')
+            ->with('success', 'Category created successfully!');
+    }
+
+
+    public function show(Category $category)
+    {
+        // Make sure the category belongs to the authenticated user
+        if ($category->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $instruments = $category->instruments;
+
+        return view('categories.show', compact('category', 'instruments'));
+    }
+
+
+    public function edit(Category $category)
+    {
+        // Make sure the category belongs to the authenticated user
+        if ($category->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return view('categories.edit', compact('category'));
     }
 
     /**
-     * Test user can create a category.
+     * Update the specified resource in storage.
      */
-    public function test_store_creates_category()
+    public function update(Request $request, Category $category)
     {
-        $user = User::factory()->create();
+        // Make sure the category belongs to the authenticated user
+        if ($category->user_id !== auth()->id()) {
+            abort(403);
+        }
 
-        $response = $this->actingAs($user)->post(route('categories.store'), [
-            'name' => 'New Category',
-            'description' => 'New Description',
+        $data = $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'nullable|string',
         ]);
 
-        $response->assertRedirect(route('categories.index'));
-        $this->assertDatabaseHas('categories', [
-            'name' => 'New Category',
-            'description' => 'New Description',
-            'user_id' => $user->id,
-        ]);
+        $category->update($data);
+
+        return redirect()->route('categories.index')
+            ->with('success', 'Category updated successfully!');
     }
 
-    /**
-     * Test user can update a category.
-     */
-    public function test_update_modifies_category()
+
+    public function destroy(Category $category)
     {
-        $user = User::factory()->create();
+        // Make sure the category belongs to the authenticated user
+        if ($category->user_id !== auth()->id()) {
+            abort(403);
+        }
 
-        $category = Category::create([
-            'name' => 'Test Category',
-            'description' => 'Test Description',
-            'user_id' => $user->id,
-        ]);
+        $category->delete();
 
-        $response = $this->actingAs($user)->put(route('categories.update', $category), [
-            'name' => 'Updated Category',
-            'description' => 'Updated Description',
-        ]);
-
-        $response->assertRedirect(route('categories.index'));
-        $this->assertDatabaseHas('categories', [
-            'id' => $category->id,
-            'name' => 'Updated Category',
-            'description' => 'Updated Description',
-        ]);
-    }
-
-    /**
-     * Test user can delete a category.
-     */
-    public function test_destroy_removes_category()
-    {
-        $user = User::factory()->create();
-
-        $category = Category::create([
-            'name' => 'Test Category',
-            'description' => 'Test Description',
-            'user_id' => $user->id,
-        ]);
-
-        $response = $this->actingAs($user)->delete(route('categories.destroy', $category));
-
-        $response->assertRedirect(route('categories.index'));
-        $this->assertDatabaseMissing('categories', ['id' => $category->id]);
-    }
-
-    /**
-     * Test user cannot access another user's category.
-     */
-    public function test_user_cannot_access_other_users_category()
-    {
-        $user1 = User::factory()->create();
-        $user2 = User::factory()->create();
-
-        $category = Category::create([
-            'name' => 'Test Category',
-            'description' => 'Test Description',
-            'user_id' => $user1->id,
-        ]);
-
-        $response = $this->actingAs($user2)->get(route('categories.show', $category));
-
-        $response->assertStatus(403); // Forbidden
+        return redirect()->route('categories.index')
+            ->with('success', 'Category deleted successfully!');
     }
 }

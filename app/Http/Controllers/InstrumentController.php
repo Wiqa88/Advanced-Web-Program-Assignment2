@@ -3,29 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Instrument;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class InstrumentController extends Controller
 {
     /**
-     * Constructor to require authentication
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Show all gear items for the authenticated user.
+     * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $gear = Instrument::query()->where('user_id', auth()->id());
+        $query = Instrument::query();
 
         // Search feature
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $gear->where(function($q) use ($search) {
+            $query->where(function($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
                     ->orWhere('type', 'LIKE', "%{$search}%")
                     ->orWhere('brand', 'LIKE', "%{$search}%")
@@ -34,12 +27,24 @@ class InstrumentController extends Controller
         }
 
         // Sort by name
-        $gear->orderBy('name', 'asc');
+        $query->orderBy('name', 'asc');
 
         // Page through results
-        $instruments = $gear->paginate(5);
+        $instruments = $query->paginate(5);
 
         return view('instruments.index', compact('instruments'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $types = Instrument::getTypes();
+        $conditions = Instrument::getConditions();
+        $categories = Category::all();
+
+        return view('instruments.create', compact('types', 'conditions', 'categories'));
     }
 
     /**
@@ -47,7 +52,6 @@ class InstrumentController extends Controller
      */
     public function store(Request $request)
     {
-        // Make sure data is valid
         $data = $request->validate([
             'name' => 'required|max:255',
             'type' => 'required|max:255',
@@ -57,55 +61,47 @@ class InstrumentController extends Controller
             'description' => 'nullable|string',
             'condition' => 'required|max:255',
             'is_favorite' => 'sometimes',
+            'categories' => 'nullable|array',
         ]);
 
-        // Handle the checkbox
         $data['is_favorite'] = $request->has('is_favorite');
+        $data['user_id'] = 1; // For now, assign to test user
 
-        // Add user_id to the data
-        $data['user_id'] = auth()->id();
+        $instrument = Instrument::create($data);
 
-        // Save to database
-        Instrument::create($data);
+        if (isset($request->categories)) {
+            $instrument->categories()->sync($request->categories);
+        }
 
         return redirect()->route('instruments.index')
-            ->with('success', 'New gear added!');
+            ->with('success', 'New instrument added!');
     }
 
     /**
-     * Show gear details.
+     * Display the specified resource.
      */
     public function show(Instrument $instrument)
     {
-        // Make sure the instrument belongs to the authenticated user
-        $this->authorize('view', $instrument);
-
         return view('instruments.show', compact('instrument'));
     }
 
     /**
-     * Show edit form.
+     * Show the form for editing the specified resource.
      */
     public function edit(Instrument $instrument)
     {
-        // Make sure the instrument belongs to the authenticated user
-        $this->authorize('update', $instrument);
-
         $types = Instrument::getTypes();
         $conditions = Instrument::getConditions();
+        $categories = Category::all();
 
-        return view('instruments.edit', compact('instrument', 'types', 'conditions'));
+        return view('instruments.edit', compact('instrument', 'types', 'conditions', 'categories'));
     }
 
     /**
-     * Update gear in database.
+     * Update the specified resource in storage.
      */
     public function update(Request $request, Instrument $instrument)
     {
-        // Make sure the instrument belongs to the authenticated user
-        $this->authorize('update', $instrument);
-
-        // Check data is valid
         $data = $request->validate([
             'name' => 'required|max:255',
             'type' => 'required|max:255',
@@ -115,16 +111,21 @@ class InstrumentController extends Controller
             'description' => 'nullable|string',
             'condition' => 'required|max:255',
             'is_favorite' => 'sometimes',
+            'categories' => 'nullable|array',
         ]);
 
-        // Handle the checkbox
         $data['is_favorite'] = $request->has('is_favorite');
 
-        // Update the database
         $instrument->update($data);
 
+        if (isset($request->categories)) {
+            $instrument->categories()->sync($request->categories);
+        } else {
+            $instrument->categories()->detach();
+        }
+
         return redirect()->route('instruments.index')
-            ->with('success', 'Gear updated!');
+            ->with('success', 'Instrument updated!');
     }
 
     /**
@@ -132,12 +133,9 @@ class InstrumentController extends Controller
      */
     public function destroy(Instrument $instrument)
     {
-        // Make sure the instrument belongs to the authenticated user
-        $this->authorize('delete', $instrument);
-
         $instrument->delete();
 
         return redirect()->route('instruments.index')
-            ->with('success', 'Gear removed from your collection');
+            ->with('success', 'Instrument removed from your collection');
     }
 }

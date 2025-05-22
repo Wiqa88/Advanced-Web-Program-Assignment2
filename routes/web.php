@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InstrumentController;
+use App\Http\Controllers\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +16,4 @@ Route::get('/', function () {
 
 Route::resource('instruments', InstrumentController::class);
 
-require __DIR__.'/auth.php';
+Route::resource('categories', CategoryController::class);

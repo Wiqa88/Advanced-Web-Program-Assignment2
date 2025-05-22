@@ -18,6 +18,7 @@ class Instrument extends Model
         'description',
         'condition',
         'is_favorite',
+        'user_id',
     ];
 
 
@@ -27,10 +28,12 @@ class Instrument extends Model
     }
 
 
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
 
-    /**
-     * Get the available instrument types.
-     */
+
     public static function getTypes()
     {
         return [
@@ -53,9 +56,7 @@ class Instrument extends Model
         ];
     }
 
-    /**
-     * Get the available condition options.
-     */
+
     public static function getConditions()
     {
         return [
