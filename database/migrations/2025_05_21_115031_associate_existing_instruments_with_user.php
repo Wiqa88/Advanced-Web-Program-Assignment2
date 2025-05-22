@@ -15,6 +15,7 @@ return new class extends Migration
             ['email' => 'test@example.com'],
             [
                 'name' => 'Test User',
+                'password' => bcrypt('password'),
             ]
         );
 
