@@ -1,6 +1,6 @@
 # Musical Instrument Collection Manager
 
-<<<<<<< HEAD
+
 This is a simple web app built with Laravel to help musicians keep track of their musical instruments. You can store and manage information like the brand, type, year bought, condition, and more.
 
 ## Why I Built This
