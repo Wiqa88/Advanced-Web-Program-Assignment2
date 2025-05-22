@@ -91,10 +91,6 @@ The app uses Laravel's layout feature for a consistent look across all pages. Ea
 - It uses a modern grid layout instead of a table
 - Search filters stay active while paginating or sorting
 
-## Screenshots
-
-[Add screenshots of your app here if you’d like]
-
 ## How to Install
 
 1. Clone this repository:
