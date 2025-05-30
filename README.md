@@ -95,11 +95,13 @@ The app uses Laravel's layout feature for a consistent look across all pages. Ea
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/instrument-collection.git
+git clone https://github.com/Wiqa88/Advanced-Web-Program-Assignment2.git
+cd Advanced-Web-Program-Assignment2
    ```
 2. Navigate into the project folder:
    ```bash
-   cd instrument-collection
+cd Advanced-Web-Program-Assignment2
+
    ```
 3. Install dependencies:
    ```bash
