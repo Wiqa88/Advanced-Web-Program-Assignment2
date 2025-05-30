@@ -156,8 +156,8 @@ Follow these steps to set up the project:
 
 1. **Clone the repository**:
    ```
-   git clone https://github.com/yourusername/musical-instrument-collection.git
-   cd musical-instrument-collection
+   git clone https://github.com/Wiqa88/Advanced-Web-Program-Assignment2.git
+cd Advanced-Web-Program-Assignment2
    ```
 
 2. **Install dependencies**:
