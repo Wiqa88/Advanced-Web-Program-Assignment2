@@ -124,7 +124,7 @@ The app uses Laravel's layout feature for a consistent look across all pages. Ea
    ```
 
 Then open your browser and go to:  
-[http://127.0.0.1:8000/instruments](http://127.0.0.1:8000/instruments)
+[http://127.0.0.1:8000/instruments](http://127.0.0.1:8000/instruments) or the link created by your terminal.
 
 You're ready to go!
 =======
@@ -206,7 +206,7 @@ Follow these steps to set up the project:
    ```
 
 8. **Use the app**:
-   Open your browser and go to `http://localhost:8000`
+   Open your browser and go to `http://localhost:8000` or the link created by your terminal.
 
 ## Advanced Features
 
