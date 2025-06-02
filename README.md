@@ -95,7 +95,7 @@ The app uses Laravel's layout feature for a consistent look across all pages. Ea
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/Wiqa88/Advanced-Web-Program-Assignment2.git
+   git clone https://github.com/your-username/Advanced-Web-Program-Assignment2.git
    ```
 2. Navigate into the project folder:
    ```bash
@@ -156,7 +156,7 @@ Follow these steps to set up the project:
 
 1. **Clone the repository**:
    ```
-   git clone https://github.com/Wiqa88/Advanced-Web-Program-Assignment2.git
+   git clone https://github.com/your-username/Advanced-Web-Program-Assignment2.git
    cd Advanced-Web-Program-Assignment2
    ```
 
